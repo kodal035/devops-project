@@ -1,25 +1,44 @@
-name: Node.js CI/CD
+name: CI/CD Pipeline
 
 on:
   push:
+    branches:
+      - main
+  pull_request:
     branches:
       - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Depoyu çek
+      - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Node.js kurulumu
+      - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
           node-version: '16'
 
-      - name: Bağımlılıkları yükle
-        run: npm install
+      - name: Install dependencies
+        run: |
+          npm install
 
-      - name: Testleri çalıştır
-        run: npm test
+      - name: Build Docker image
+        run: |
+          docker build -t devops-projem .
+
+      - name: Run tests
+        run: |
+          echo "No tests added yet" # Testlerinizi buraya ekleyebilirsiniz
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Push Docker image
+        run: |
+          docker tag devops-projem:latest ${{ secrets.DOCKER_USERNAME }}/devops-projem:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/devops-projem:latest
