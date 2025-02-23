@@ -1,7 +1,12 @@
 FROM node:16
 WORKDIR /app
-COPY package.json .
-RUN npm install
-COPY . .
-CMD ["node", "server.js"]
+
+# Bağımlılıkları kopyala ve yükle
+COPY package.json package-lock.json ./  
+RUN npm install  
+
+# Tüm dosyaları kopyala
+COPY . .  
+
+CMD ["node", "src/server.js"]
 EXPOSE 3000
